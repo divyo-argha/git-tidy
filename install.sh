@@ -142,7 +142,9 @@ install_binary() {
   info "Verifying checksum…"
   if curl -fsSL "$checksum_url" -o "${tmp}/checksums.txt" 2>/dev/null; then
     local expected actual
-    expected=$(grep "${asset}$" "${tmp}/checksums.txt" | awk '{print $1}')
+    # Match the asset name at the end of the line, allowing for optional '*' or './' prefixes
+    # and handling potential carriage returns (\r) from CRLF line endings.
+    expected=$(sed 's/\r$//' "${tmp}/checksums.txt" | grep -E "[[:space:]\*./]*${asset}$" | awk '{print $1}')
     if [ -n "$expected" ]; then
       if command -v sha256sum &>/dev/null; then
         actual=$(sha256sum "${tmp}/${BINARY}" | awk '{print $1}')
