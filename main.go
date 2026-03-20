@@ -1,6 +1,6 @@
 package main
 
-import "github.com/yourusername/git-tidy/cmd"
+import "github.com/divyo-argha/git-tidy/cmd"
 
 // Build-time variables injected via -ldflags.
 // Defaults to "dev" / "none" / "unknown" for local builds.

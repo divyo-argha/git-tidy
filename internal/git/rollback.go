@@ -3,7 +3,7 @@ package git
 import (
 	"fmt"
 
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // RollbackJournal records the repository state before a mutating operation

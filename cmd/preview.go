@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/git-tidy/internal/git"
-	"github.com/yourusername/git-tidy/internal/tui"
+	"github.com/divyo-argha/git-tidy/internal/git"
+	"github.com/divyo-argha/git-tidy/internal/tui"
 )
 
 func newPreviewCmd() *cobra.Command {

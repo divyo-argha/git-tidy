@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yourusername/git-tidy/internal/domain"
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	"github.com/divyo-argha/git-tidy/internal/domain"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 const logSeparator = "|||"

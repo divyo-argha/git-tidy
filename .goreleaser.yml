@@ -1,0 +1,78 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  GoReleaser configuration
+#  Docs: https://goreleaser.com
+#  Usage: goreleaser release --clean
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: 2
+
+project_name: git-tidy
+
+before:
+  hooks:
+    - go mod tidy
+    - go vet ./...
+
+builds:
+  - id: git-tidy
+    binary: git-tidy
+    main: .
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{ .Version }}
+      - -X main.commit={{ .Commit }}
+      - -X main.date={{ .Date }}
+    # Produce plain binaries (no archive) — easier to curl-install.
+    # The asset name becomes: git-tidy-<os>-<arch>
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: binaries
+    format: binary
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: "New features"
+      regexp: "^feat"
+      order: 0
+    - title: "Bug fixes"
+      regexp: "^fix"
+      order: 1
+    - title: "Other changes"
+      order: 999
+
+release:
+  github:
+    owner: divyo-argha
+    name: git-tidy
+  name_template: "v{{ .Version }}"
+  footer: |
+    ## Installation
+
+    ```bash
+    curl -fsSL https://raw.githubusercontent.com/divyo-argha/git-tidy/main/install.sh | bash
+    ```
+
+    Or download the binary for your platform from the assets below and place it on your `$PATH`.

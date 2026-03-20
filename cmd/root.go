@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/git-tidy/internal/tui"
+	"github.com/divyo-argha/git-tidy/internal/tui"
 )
 
 var rootCmd = &cobra.Command{
@@ -29,7 +29,7 @@ var rootCmd = &cobra.Command{
   ` + tui.Bold("Flags:") + `
     --version, -v                 # same as: git tidy version --short
 
-  ` + tui.Muted("Docs: https://github.com/yourusername/git-tidy"),
+  ` + tui.Muted("Docs: https://github.com/divyo-argha/git-tidy"),
 	// --version / -v flag handled below via PersistentPreRunE.
 	SilenceUsage:  true,
 	SilenceErrors: true,

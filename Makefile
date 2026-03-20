@@ -5,7 +5,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 BINARY      := git-tidy
-MODULE      := github.com/yourusername/git-tidy
+MODULE      := github.com/divyo-argha/git-tidy
 BUILD_DIR   := ./bin
 INSTALL_DIR ?= /usr/local/bin
 

@@ -3,8 +3,8 @@ package git
 import (
 	"strings"
 
-	"github.com/yourusername/git-tidy/internal/domain"
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	"github.com/divyo-argha/git-tidy/internal/domain"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // CherryPickResult holds the full outcome of a cherry-pick batch.

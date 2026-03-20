@@ -4,8 +4,8 @@
 
 **Clean up messy Git history. Prepare perfect pull requests.**
 
-[![CI](https://github.com/yourusername/git-tidy/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/git-tidy/actions/workflows/ci.yml)
-[![Release](https://github.com/yourusername/git-tidy/actions/workflows/release.yml/badge.svg)](https://github.com/yourusername/git-tidy/actions/workflows/release.yml)
+[![CI](https://github.com/divyo-argha/git-tidy/actions/workflows/ci.yml/badge.svg)](https://github.com/divyo-argha/git-tidy/actions/workflows/ci.yml)
+[![Release](https://github.com/divyo-argha/git-tidy/actions/workflows/release.yml/badge.svg)](https://github.com/divyo-argha/git-tidy/actions/workflows/release.yml)
 [![Go version](https://img.shields.io/badge/go-1.21+-00ADD8?logo=go)](go.mod)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -90,7 +90,7 @@ You want a PR that contains only the three real commits — but `git rebase -i` 
 ### One-line install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/git-tidy/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/divyo-argha/git-tidy/main/install.sh | bash
 ```
 
 **Options:**
@@ -118,7 +118,7 @@ The installer:
 **Requirements:** Go 1.21+, Git, Make
 
 ```bash
-git clone https://github.com/yourusername/git-tidy
+git clone https://github.com/divyo-argha/git-tidy
 cd git-tidy
 go mod tidy
 make install          # builds and copies to /usr/local/bin
@@ -134,14 +134,14 @@ make install INSTALL_DIR=~/.local/bin
 
 ```bash
 # Download the binary for your platform from:
-# https://github.com/yourusername/git-tidy/releases
+# https://github.com/divyo-argha/git-tidy/releases
 
 # Linux amd64
-curl -fsSL https://github.com/yourusername/git-tidy/releases/latest/download/git-tidy-linux-amd64 \
+curl -fsSL https://github.com/divyo-argha/git-tidy/releases/latest/download/git-tidy-linux-amd64 \
   -o /usr/local/bin/git-tidy && chmod +x /usr/local/bin/git-tidy
 
 # macOS Apple Silicon
-curl -fsSL https://github.com/yourusername/git-tidy/releases/latest/download/git-tidy-darwin-arm64 \
+curl -fsSL https://github.com/divyo-argha/git-tidy/releases/latest/download/git-tidy-darwin-arm64 \
   -o /usr/local/bin/git-tidy && chmod +x /usr/local/bin/git-tidy
 ```
 
@@ -388,7 +388,7 @@ rm /usr/local/bin/git-tidy
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup, architecture guide, commit conventions, and PR checklist.
 
 ```bash
-git clone https://github.com/yourusername/git-tidy
+git clone https://github.com/divyo-argha/git-tidy
 cd git-tidy && go mod tidy
 make check && make test
 ```
@@ -403,4 +403,4 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 ## License
 
-[MIT](LICENSE) — © 2024 yourusername
+[MIT](LICENSE) — © 2024 divyo-argha

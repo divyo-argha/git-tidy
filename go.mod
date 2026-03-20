@@ -1,4 +1,4 @@
-module github.com/yourusername/git-tidy
+module github.com/divyo-argha/git-tidy
 
 go 1.21
 

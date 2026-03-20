@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // run executes a git command in the current working directory.

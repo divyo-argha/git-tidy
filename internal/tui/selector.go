@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/yourusername/git-tidy/internal/domain"
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	"github.com/divyo-argha/git-tidy/internal/domain"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // ShowCommits prints the numbered commit list.

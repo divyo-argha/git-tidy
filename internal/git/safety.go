@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // ── Repository state checks ────────────────────────────────────────────────

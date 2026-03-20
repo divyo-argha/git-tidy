@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // DirtyTreeChoice represents the user's response to an uncommitted-changes warning.

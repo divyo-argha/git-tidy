@@ -3,7 +3,7 @@ package git
 import (
 	"strings"
 
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 // BranchExists returns true if a local branch with the given name exists.

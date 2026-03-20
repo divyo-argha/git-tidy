@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/git-tidy/internal/domain"
-	"github.com/yourusername/git-tidy/internal/git"
-	"github.com/yourusername/git-tidy/internal/tui"
-	giterrors "github.com/yourusername/git-tidy/pkg/errors"
+	"github.com/divyo-argha/git-tidy/internal/domain"
+	"github.com/divyo-argha/git-tidy/internal/git"
+	"github.com/divyo-argha/git-tidy/internal/tui"
+	giterrors "github.com/divyo-argha/git-tidy/pkg/errors"
 )
 
 func newCreateCmd() *cobra.Command {
