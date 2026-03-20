@@ -29,11 +29,11 @@ else
   RED=''; GREEN=''; YELLOW=''; CYAN=''; BOLD=''; RESET=''
 fi
 
-info()    { echo -e "  ${CYAN}→${RESET}  $*"; }
-success() { echo -e "  ${GREEN}✓${RESET}  $*"; }
-warn()    { echo -e "  ${YELLOW}!${RESET}  $*"; }
+info()    { echo -e "  ${CYAN}→${RESET}  $*" >&2; }
+success() { echo -e "  ${GREEN}✓${RESET}  $*" >&2; }
+warn()    { echo -e "  ${YELLOW}!${RESET}  $*" >&2; }
 die()     { echo -e "  ${RED}✗${RESET}  ${BOLD}Error:${RESET} $*" >&2; exit 1; }
-header()  { echo -e "\n  ${BOLD}${CYAN}git-tidy installer${RESET}\n"; }
+header()  { echo -e "\n  ${BOLD}${CYAN}git-tidy installer${RESET}\n" >&2; }
 
 # ── Argument parsing ──────────────────────────────────────────────────────────
 
