@@ -114,9 +114,14 @@ install_binary() {
   local os="$2"
   local arch="$3"
 
-  # Asset name must match what goreleaser produces.
-  local asset="${BINARY}-${os}-${arch}"
-  local url="${GITHUB_RELEASES}/v${version}/${asset}"
+  # Construct the download URL.
+  # If version doesn't start with 'v', prepend it (common for semver).
+  local tag="${version}"
+  if [[ ! "$tag" =~ ^v ]]; then
+    tag="v${tag}"
+  fi
+
+  local url="${GITHUB_RELEASES}/${tag}/${asset}"
   local checksum_url="${GITHUB_RELEASES}/v${version}/checksums.txt"
 
   info "Version  : v${version}"
