@@ -114,6 +114,9 @@ install_binary() {
   local os="$2"
   local arch="$3"
 
+  # Asset name must match what goreleaser produces.
+  local asset="${BINARY}-${os}-${arch}"
+
   # Construct the download URL.
   # If version doesn't start with 'v', prepend it (common for semver).
   local tag="${version}"
