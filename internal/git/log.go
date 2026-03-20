@@ -10,24 +10,6 @@ import (
 
 const logSeparator = "|||"
 
-// IsRepo returns true if the current directory is inside a Git repository.
-func IsRepo() bool {
-	_, err := run("rev-parse", "--is-inside-work-tree")
-	return err == nil
-}
-
-// IsClean returns true if the working tree has no uncommitted changes.
-func IsClean() error {
-	out, err := run("status", "--porcelain")
-	if err != nil {
-		return err
-	}
-	if out != "" {
-		return &giterrors.DirtyWorkDirError{}
-	}
-	return nil
-}
-
 // Log returns the last `limit` commits on the current branch.
 func Log(limit int) ([]domain.Commit, error) {
 	if !IsRepo() {
@@ -42,15 +24,12 @@ func Log(limit int) ([]domain.Commit, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	if out == "" {
+	if strings.TrimSpace(out) == "" {
 		return nil, fmt.Errorf("no commits found in this repository")
 	}
 
-	lines := strings.Split(out, "\n")
-	commits := make([]domain.Commit, 0, len(lines))
-
-	for _, line := range lines {
+	var commits []domain.Commit
+	for _, line := range strings.Split(out, "\n") {
 		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -60,6 +39,9 @@ func Log(limit int) ([]domain.Commit, error) {
 			continue
 		}
 		hash := strings.TrimSpace(parts[0])
+		if len(hash) < 7 {
+			continue
+		}
 		commits = append(commits, domain.Commit{
 			Hash:      hash,
 			ShortHash: hash[:7],
@@ -68,6 +50,5 @@ func Log(limit int) ([]domain.Commit, error) {
 			RelDate:   strings.TrimSpace(parts[3]),
 		})
 	}
-
 	return commits, nil
 }
