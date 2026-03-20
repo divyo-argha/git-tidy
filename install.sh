@@ -136,7 +136,7 @@ install_binary() {
 
   info "Downloading binary…"
   curl -fsSL --progress-bar "$url" -o "${tmp}/${BINARY}" \
-    || die "Download failed. Does release v${version} exist?\n     Check: https://github.com/${REPO}/releases"
+    || die "Download failed. Does release ${tag} exist?\n     Check: https://github.com/${REPO}/releases"
 
   # Verify checksum if available (non-fatal — warns instead of blocking).
   info "Verifying checksum…"
