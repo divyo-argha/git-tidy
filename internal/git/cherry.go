@@ -1,9 +1,6 @@
 package git
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/yourusername/git-tidy/internal/domain"
 	giterrors "github.com/yourusername/git-tidy/pkg/errors"
 )
@@ -11,44 +8,43 @@ import (
 // CherryPickResult holds the outcome of a cherry-pick batch.
 type CherryPickResult struct {
 	Applied []domain.Commit
-	Failed  *domain.Commit // non-nil if a conflict stopped the batch
+	Failed  *domain.Commit // non-nil when a conflict stopped the batch
 }
 
-// CherryPick applies the given commits in order onto the current branch.
-// On conflict it aborts the cherry-pick, records the failing commit, and returns.
-// Commits should be in the order they are to be applied (oldest first for a clean history).
-func CherryPick(commits []domain.Commit) (CherryPickResult, error) {
-	result := CherryPickResult{}
+// ProgressFunc is called after each successful cherry-pick.
+// current is 1-based, total is len(commits).
+type ProgressFunc func(current, total int, c domain.Commit)
 
-	for i := range commits {
-		c := commits[i]
-		_, err := run("cherry-pick", c.Hash)
-		if err != nil {
-			// Abort the in-progress cherry-pick so the repo is left clean.
+// CherryPickWithProgress applies commits in order onto the current branch,
+// calling progress after each success.
+// On conflict it aborts, leaves the caller responsible for branch cleanup.
+func CherryPickWithProgress(commits []domain.Commit, progress ProgressFunc) (CherryPickResult, error) {
+	result := CherryPickResult{}
+	total := len(commits)
+
+	for i, c := range commits {
+		if _, err := run("cherry-pick", c.Hash); err != nil {
 			abortCherryPick()
-			result.Failed = &c
+			result.Failed = &commits[i]
 			return result, &giterrors.CherryPickConflictError{
 				Hash:    c.Hash,
 				Subject: c.Subject,
 			}
 		}
 		result.Applied = append(result.Applied, c)
-		fmt.Printf("    ✓  %s  %s\n", c.ShortHash, truncate(c.Subject, 55))
+		if progress != nil {
+			progress(i+1, total, c)
+		}
 	}
 
 	return result, nil
 }
 
-// abortCherryPick runs `git cherry-pick --abort`, ignoring errors
-// (the repo may already be clean if the conflict happened before any write).
-func abortCherryPick() {
-	run("cherry-pick", "--abort") //nolint:errcheck
+// CherryPick is a convenience wrapper without a progress callback.
+func CherryPick(commits []domain.Commit) (CherryPickResult, error) {
+	return CherryPickWithProgress(commits, nil)
 }
 
-func truncate(s string, max int) string {
-	s = strings.TrimSpace(s)
-	if len(s) <= max {
-		return s
-	}
-	return s[:max-3] + "..."
+func abortCherryPick() {
+	run("cherry-pick", "--abort") //nolint:errcheck
 }
