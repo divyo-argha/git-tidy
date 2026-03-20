@@ -89,8 +89,7 @@ check_deps() {
 
 resolve_version() {
   if [ -n "$REQUESTED_VERSION" ]; then
-    # Strip leading 'v' for normalisation, add it back later.
-    echo "${REQUESTED_VERSION#v}"
+    echo "$REQUESTED_VERSION"
     return
   fi
 
@@ -98,7 +97,7 @@ resolve_version() {
   local tag
   tag=$(curl -fsSL "${GITHUB_API}/releases/latest" \
     | grep '"tag_name"' \
-    | sed -E 's/.*"tag_name": *"v?([^"]+)".*/\1/') \
+    | sed -E 's/.*"tag_name": *"([^"]+)".*/\1/') \
     || die "Could not fetch latest release. Check your internet connection."
 
   if [ -z "$tag" ]; then
@@ -110,25 +109,17 @@ resolve_version() {
 # ── Download & install ────────────────────────────────────────────────────────
 
 install_binary() {
-  local version="$1"
+  local tag="$1"
   local os="$2"
   local arch="$3"
 
   # ── Binary Download ─────────────────────────────────────────────────────────
   # Asset name must match what goreleaser produces.
   local asset="${BINARY}-${os}-${arch}"
-
-  # Construct the download URL.
-  # If version doesn't start with 'v', prepend it (common for semver).
-  local tag="${version}"
-  if [[ ! "$tag" =~ ^v ]]; then
-    tag="v${tag}"
-  fi
-
   local url="${GITHUB_RELEASES}/${tag}/${asset}"
-  local checksum_url="${GITHUB_RELEASES}/v${version}/checksums.txt"
+  local checksum_url="${GITHUB_RELEASES}/${tag}/checksums.txt"
 
-  info "Version  : v${version}"
+  info "Version  : ${tag}"
   info "Platform : ${os}/${arch}"
   info "Target   : ${INSTALL_DIR}/${BINARY}"
 
