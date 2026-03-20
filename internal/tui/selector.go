@@ -12,8 +12,10 @@ import (
 	giterrors "github.com/yourusername/git-tidy/pkg/errors"
 )
 
-// ShowCommits prints the numbered commit list, highlighting selected rows.
-func ShowCommits(commits []domain.Commit, selected map[int]bool) {
+// ShowCommits prints the numbered commit list.
+// selected: 1-based index set of chosen commits (highlighted in green).
+// duplicates: 1-based index set of commits already on the target branch (marked with ~).
+func ShowCommits(commits []domain.Commit, selected map[int]bool, duplicates map[int]bool) {
 	Spacer()
 	fmt.Printf("  %s  %s\n", Header("Recent commits"), Muted(fmt.Sprintf("(%d shown)", len(commits))))
 	Divider()
@@ -29,34 +31,54 @@ func ShowCommits(commits []domain.Commit, selected map[int]bool) {
 		auth := Author(Truncate(c.Author, 18))
 		when := When(c.RelDate)
 
+		isDup := duplicates != nil && duplicates[idx]
+		isSel := selected[idx]
+
+		// Choose icon: selected > duplicate > empty
 		var icon string
-		if selected[idx] {
+		switch {
+		case isSel:
 			icon = Success(IconPick)
-		} else {
+		case isDup:
+			icon = Warning("~") // already applied
+		default:
 			icon = Muted(IconEmpty)
+		}
+
+		// Dim duplicates that aren't explicitly selected.
+		if isDup && !isSel {
+			subj = Muted(subj)
 		}
 
 		row := fmt.Sprintf("  %s  %s  %s  %-54s  %-18s  %s",
 			Muted(num), icon, hash, subj, auth, when)
 
-		if selected[idx] {
+		switch {
+		case isSel:
 			fmt.Println(SelectedRow(row))
-		} else {
+		case isDup:
+			fmt.Println(Muted(row))
+		default:
 			fmt.Println(row)
 		}
 	}
 
 	Divider()
+
+	// Legend line if any duplicates are present.
+	if duplicates != nil && len(duplicates) > 0 {
+		fmt.Printf("  %s  %s  already on target branch\n\n",
+			Warning("~"), Muted("="))
+	}
 }
 
 // SelectCommits prompts the user to pick commits by number.
-// Supports: individual numbers (1,3,5), ranges (2-6), "all", and re-prompts on bad input.
-// Returns commits sorted oldest-first for clean cherry-pick ordering.
-func SelectCommits(commits []domain.Commit) ([]domain.Commit, error) {
+// duplicates: optional set of 1-based indices to mark as already-applied.
+// Returns commits oldest-first for clean cherry-pick ordering.
+func SelectCommits(commits []domain.Commit, duplicates map[int]bool) ([]domain.Commit, error) {
 	reader := bufio.NewReader(os.Stdin)
 
-	// First render with empty selection.
-	ShowCommits(commits, map[int]bool{})
+	ShowCommits(commits, map[int]bool{}, duplicates)
 
 	for {
 		Spacer()
@@ -75,21 +97,18 @@ func SelectCommits(commits []domain.Commit) ([]domain.Commit, error) {
 			continue
 		}
 
-		// "all" shorthand.
 		if strings.EqualFold(raw, "all") {
 			result := make([]domain.Commit, len(commits))
 			copy(result, commits)
-			reverseCommits(result) // log is newest-first; apply oldest-first
-			allSelected := map[int]bool{}
+			reverseCommits(result)
+			allSel := map[int]bool{}
 			for i := range commits {
-				allSelected[i+1] = true
+				allSel[i+1] = true
 			}
 			Spacer()
 			fmt.Printf("  %s  all %s commits selected\n",
-				Success(fmt.Sprintf("%d", len(commits))),
-				Muted("highlighted below"),
-			)
-			ShowCommits(commits, allSelected)
+				Success(fmt.Sprintf("%d", len(commits))), Muted("highlighted below"))
+			ShowCommits(commits, allSel, duplicates)
 			return result, nil
 		}
 
@@ -99,7 +118,6 @@ func SelectCommits(commits []domain.Commit) ([]domain.Commit, error) {
 			continue
 		}
 
-		// Build highlight map and re-render so user sees what they picked.
 		selectedMap := map[int]bool{}
 		for _, idx := range indices {
 			selectedMap[idx] = true
@@ -110,21 +128,19 @@ func SelectCommits(commits []domain.Commit) ([]domain.Commit, error) {
 			Success(fmt.Sprintf("%d commit(s)", len(selectedMap))),
 			Muted("confirm on the next step"),
 		)
-		ShowCommits(commits, selectedMap)
+		ShowCommits(commits, selectedMap, duplicates)
 
-		// Deduplicate + sort descending (newest-first in log), then build slice.
 		unique := uniqueSorted(indices)
 		result := make([]domain.Commit, 0, len(unique))
 		for _, idx := range unique {
 			result = append(result, commits[idx-1])
 		}
-
 		return result, nil
 	}
 }
 
-// ConfirmSelection shows the execution plan and asks the user to confirm.
-// When dryRun is true it prints the plan without prompting and returns false.
+// ConfirmSelection renders the execution plan.
+// dryRun=true skips the y/N prompt and always returns false.
 func ConfirmSelection(commits []domain.Commit, branchName string, dryRun bool) (bool, error) {
 	Spacer()
 	Divider()
@@ -180,22 +196,19 @@ func PrintProgress(current, total int, c domain.Commit) {
 
 func parseSelection(input string, max int) ([]int, error) {
 	var indices []int
-
-	parts := strings.Split(input, ",")
-	for _, part := range parts {
+	for _, part := range strings.Split(input, ",") {
 		part = strings.TrimSpace(part)
 		if part == "" {
 			continue
 		}
-
 		if strings.Contains(part, "-") {
 			bounds := strings.SplitN(part, "-", 2)
 			if len(bounds) != 2 {
 				return nil, &giterrors.InvalidSelectionError{Input: part}
 			}
-			lo, err1 := strconv.Atoi(strings.TrimSpace(bounds[0]))
-			hi, err2 := strconv.Atoi(strings.TrimSpace(bounds[1]))
-			if err1 != nil || err2 != nil || lo < 1 || hi > max || lo > hi {
+			lo, e1 := strconv.Atoi(strings.TrimSpace(bounds[0]))
+			hi, e2 := strconv.Atoi(strings.TrimSpace(bounds[1]))
+			if e1 != nil || e2 != nil || lo < 1 || hi > max || lo > hi {
 				return nil, &giterrors.InvalidSelectionError{Input: part}
 			}
 			for i := lo; i <= hi; i++ {
@@ -203,23 +216,18 @@ func parseSelection(input string, max int) ([]int, error) {
 			}
 			continue
 		}
-
 		n, err := strconv.Atoi(part)
 		if err != nil || n < 1 || n > max {
 			return nil, &giterrors.InvalidSelectionError{Input: part}
 		}
 		indices = append(indices, n)
 	}
-
 	if len(indices) == 0 {
 		return nil, fmt.Errorf("no valid commit numbers found in %q", input)
 	}
 	return indices, nil
 }
 
-// uniqueSorted deduplicates and sorts descending (newest log index first),
-// so when we pull commits[idx-1] in order we get newest→oldest,
-// which after reverseCommits becomes oldest→newest for cherry-pick.
 func uniqueSorted(indices []int) []int {
 	seen := make(map[int]bool, len(indices))
 	var uniq []int
