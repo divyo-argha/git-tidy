@@ -89,7 +89,7 @@ func runPreview(args []string, limit int) error {
 		return err
 	}
 
-	selected, err := tui.SelectCommits(commits)
+	selected, err := tui.SelectCommits(commits, map[int]bool{})
 	if err != nil {
 		tui.PrintError("Commit selection failed", err.Error())
 		return err

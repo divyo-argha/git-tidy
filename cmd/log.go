@@ -31,7 +31,7 @@ Examples:
 			if branch != "" {
 				fmt.Printf("  %s  Branch: %s\n", tui.Info(tui.IconArrow), tui.Branch(branch))
 			}
-			tui.ShowCommits(commits, map[int]bool{})
+			tui.ShowCommits(commits, map[int]bool{}, map[int]bool{})
 			fmt.Printf("  %s  Showing %s  %s\n\n",
 				tui.Muted("→"),
 				tui.Accent(fmt.Sprintf("%d commits", len(commits))),
