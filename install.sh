@@ -114,6 +114,7 @@ install_binary() {
   local os="$2"
   local arch="$3"
 
+  # ── Binary Download ─────────────────────────────────────────────────────────
   # Asset name must match what goreleaser produces.
   local asset="${BINARY}-${os}-${arch}"
 
