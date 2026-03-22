@@ -403,4 +403,4 @@ See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
 ## License
 
-[MIT](LICENSE) — © 2024 divyo-argha
+[MIT](LICENSE) — © 2026 divyo-argha
